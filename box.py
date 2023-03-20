@@ -1,8 +1,10 @@
 import sys
 import os
-# from PyQt5 import QtCore, QtWidgets, QtGui
+import subprocess
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
+from comset import ADBCommand
 
 
 class mainwin(QWidget):
@@ -62,13 +64,37 @@ class mainwin(QWidget):
         navboxdown.addWidget(fun17)
         navboxdown.addWidget(fun18)
         contbox = QHBoxLayout()
+        leftcon = QGridLayout()
+        names = ["g1","g2","g3","g4",
+                 "g5","g6","g7","g8",
+                 "g9","g21","g32","g43",
+                 "g12","g23","g34","g45"
+                 ]
+        positions = [(i,j) for i in range(4) for j in range(4)]
+        for position,name in zip(positions,names):
+            if name == '':
+                continue
+            button = QPushButton(name)
+            leftcon.addWidget(button,*position)
+        rightcon = QHBoxLayout()
+        self.textdisplay = QTextEdit()
+        rightcon.addWidget(self.textdisplay)
+        fun1.clicked.connect(self.cmd1)
         vbox.addLayout(butbox)
         vbox.addLayout(navbox)
         navbox.addLayout(navboxup)
         navbox.addLayout(navboxdown)
         vbox.addLayout(contbox)
-        vbox.addItem(vboxspac)
+        contbox.addLayout(leftcon)
+        contbox.addLayout(rightcon)
+        # vbox.addItem(vboxspac)
         self.setLayout(vbox)
+
+
+    def cmd1(self):
+        findev = ADBCommand("adb devices")
+        findev_output = findev.execute()
+        self.textdisplay.setText(findev_output)
 
 
 if __name__ == '__main__':
