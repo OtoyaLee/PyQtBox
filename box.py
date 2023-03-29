@@ -17,9 +17,10 @@ class mainwin(QWidget):
         self.setWindowIcon(QIcon('PyQtBox\logo.png'))
 
         self.groupbox1 = QGroupBox("功能切换",self)
-        self.groupbox2 = QGroupBox("Adb命令",self)
-        self.groupbox3 = QGroupBox("辅助功能",self)
-        self.groupbox4 = QGroupBox("屏显",self)
+        self.groupbox2 = QGroupBox("环境配置",self)
+        self.groupbox3 = QGroupBox("软件安装/激活",self)
+        self.groupbox4 = QGroupBox("辅助功能",self)
+        self.groupbox5 = QGroupBox("屏显",self)
 
 #总体布局，竖向
         vbox = QVBoxLayout()
@@ -37,46 +38,27 @@ class mainwin(QWidget):
         vboxspac = QSpacerItem(20,20,QSizePolicy.Minimum,QSizePolicy.Expanding)
         self.groupbox1.setLayout(butbox)
         #多功能
-#第二个垂直布局
-        navbox = QVBoxLayout()
-#垂直布局内部的第一个横向布局
-        navboxup = QHBoxLayout()
-        fun1 = QPushButton("fun1")
-        fun2 = QPushButton("fun1")
-        fun3 = QPushButton("fun1")
-        fun4 = QPushButton("fun1")
-        fun5 = QPushButton("fun1")
-        fun6 = QPushButton("fun1")
-        fun7 = QPushButton("fun1")
-        fun8 = QPushButton("fun1")
-        navboxup.addWidget(fun1)
-        navboxup.addWidget(fun2)
-        navboxup.addWidget(fun3)
-        navboxup.addWidget(fun4)
-        navboxup.addWidget(fun5)
-        navboxup.addWidget(fun6)
-        navboxup.addWidget(fun7)
-        navboxup.addWidget(fun8)
-#垂直布局内部的第二个横向布局
-        navboxdown = QHBoxLayout()
-        fun11 =QPushButton("fun1")
-        fun12 =QPushButton("fun1")
-        fun13 =QPushButton("fun1")
-        fun14 =QPushButton("fun1")
-        fun15 =QPushButton("fun1")
-        fun16 =QPushButton("fun1")
-        fun17 =QPushButton("fun1")
-        fun18 =QPushButton("fun1")
-        navboxdown.addWidget(fun11)
-        navboxdown.addWidget(fun12)
-        navboxdown.addWidget(fun13)
-        navboxdown.addWidget(fun14)
-        navboxdown.addWidget(fun15)
-        navboxdown.addWidget(fun16)
-        navboxdown.addWidget(fun17)
-        navboxdown.addWidget(fun18)
-
-        self.groupbox2.setLayout(navbox)
+#第二个横向布局
+        navbox = QHBoxLayout()
+#横向布局内部的第一个横向布局
+#内部为纵向布局
+        leftnav = QVBoxLayout()
+        fun1 = QPushButton("显示设备") 
+        # fun1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        # fun1.setMaximumWidth(50)
+        # fun1.setMaximumHeight(50)
+        fun2 = QPushButton("2")
+        leftnav.addWidget(fun1)
+        leftnav.addWidget(fun2)
+        self.groupbox2.setLayout(leftnav)
+        
+        rightnav = QHBoxLayout()
+        fun3 = QPushButton("jkasdfj")
+        fun4 = QPushButton("huds")
+        rightnav.addWidget(fun3)
+        rightnav.addWidget(fun4)
+        # navbox.addLayout(navboxleft)
+        self.groupbox3.setLayout(rightnav)
 #第三个横向布局
         contbox = QHBoxLayout()
 #横向布局内部的第一个网格布局
@@ -91,48 +73,37 @@ class mainwin(QWidget):
             if name == '':
                 continue
             button = QPushButton(name)
+            button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+            button.setMaximumWidth(250)
             leftcon.addWidget(button,*position)
 
-        self.groupbox3.setLayout(leftcon)
+        self.groupbox4.setLayout(leftcon)
         
 #横向布局第二个横向布局
         rightcon = QHBoxLayout()
         self.textdisplay = QTextEdit()
         rightcon.addWidget(self.textdisplay)
-
-        self.groupbox4.setLayout(rightcon)
+        self.groupbox5.setLayout(rightcon)
 
         fun1.clicked.connect(self.cmd1)
         fun2.clicked.connect(self.cmd2)
-        fun3.clicked.connect(self.cmd3)
-        fun4.clicked.connect(self.cmd4)
-        fun5.clicked.connect(self.cmd5)
-        fun6.clicked.connect(self.cmd6)
-        fun7.clicked.connect(self.cmd7)
-        fun8.clicked.connect(self.cmd8)
-        fun11.clicked.connect(self.cmd11)
-        fun12.clicked.connect(self.cmd12)
-        fun13.clicked.connect(self.cmd13)
-        fun14.clicked.connect(self.cmd14)
-        fun15.clicked.connect(self.cmd15)
-        fun16.clicked.connect(self.cmd16)
-        fun17.clicked.connect(self.cmd17)
-        fun18.clicked.connect(self.cmd18)
+
 
 
         vbox.addLayout(butbox)
         vbox.addWidget(self.groupbox1)
 
-        vbox.addWidget(self.groupbox2)
-        vbox.addLayout(navbox)
-        navbox.addLayout(navboxup)
-        navbox.addLayout(navboxdown)
 
+        vbox.addLayout(navbox)
+        navbox.addLayout(leftnav)
+        navbox.addWidget(self.groupbox2)
+        navbox.addLayout(rightnav)
+        navbox.addWidget(self.groupbox3)
         vbox.addLayout(contbox)
-        contbox.addWidget(self.groupbox3)
         contbox.addLayout(leftcon)
         contbox.addWidget(self.groupbox4)
         contbox.addLayout(rightcon)
+        contbox.addWidget(self.groupbox5)
         # vbox.addItem(vboxspac)
         self.setLayout(vbox)
 
@@ -142,7 +113,7 @@ class mainwin(QWidget):
         findev_output = findev.execute()
         self.textdisplay.setText(findev_output)
     def cmd2(self):
-        findev = ADBCommand("adb devices")
+        findev = ADBCommand("adb shell  settings list system")
         findev_output = findev.execute()
         self.textdisplay.setText(findev_output)
     def cmd3(self):
