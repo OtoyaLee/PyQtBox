@@ -43,20 +43,33 @@ class mainwin(QWidget):
 #横向布局内部的第一个横向布局
 #内部为纵向布局
         leftnav = QVBoxLayout()
-        fun1 = QPushButton("显示设备") 
-        # fun1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        # fun1.setMaximumWidth(50)
-        # fun1.setMaximumHeight(50)
-        fun2 = QPushButton("2")
+        fun1 = QPushButton("一键环境部署") 
+        fun1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        fun2 = QPushButton("取消所有部署")
+        fun2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         leftnav.addWidget(fun1)
         leftnav.addWidget(fun2)
         self.groupbox2.setLayout(leftnav)
         
-        rightnav = QHBoxLayout()
-        fun3 = QPushButton("jkasdfj")
-        fun4 = QPushButton("huds")
-        rightnav.addWidget(fun3)
-        rightnav.addWidget(fun4)
+        rightnav = QVBoxLayout()
+
+        rightnav1 = QHBoxLayout()
+        fun3 = QPushButton("Shizuku安装/激活")
+        fun3.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        fun4 = QPushButton("权限管理ops安装/激活")
+        fun4.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        rightnav1.addWidget(fun3)
+        rightnav1.addWidget(fun4)
+        rightnav.addLayout(rightnav1)
+
+        rightnav2 = QHBoxLayout()
+        fun5 = QPushButton("冰箱安装/激活")
+        fun5.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        fun6 = QPushButton("")
+        fun6.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        rightnav2.addWidget(fun5)
+        rightnav2.addWidget(fun6)
+        rightnav.addLayout(rightnav2)
         # navbox.addLayout(navboxleft)
         self.groupbox3.setLayout(rightnav)
 #第三个横向布局
@@ -78,15 +91,18 @@ class mainwin(QWidget):
             leftcon.addWidget(button,*position)
 
         self.groupbox4.setLayout(leftcon)
-        
+
 #横向布局第二个横向布局
         rightcon = QHBoxLayout()
         self.textdisplay = QTextEdit()
         rightcon.addWidget(self.textdisplay)
         self.groupbox5.setLayout(rightcon)
-
+#功能绑定
         fun1.clicked.connect(self.cmd1)
         fun2.clicked.connect(self.cmd2)
+        fun3.clicked.connect(self.shizuku)
+        fun4.clicked.connect(self.ops)
+        fun5.clicked.connect(self.icebox)
 
 
 
@@ -98,6 +114,8 @@ class mainwin(QWidget):
         navbox.addLayout(leftnav)
         navbox.addWidget(self.groupbox2)
         navbox.addLayout(rightnav)
+        rightnav.addLayout(rightnav1)
+        rightnav.addLayout(rightnav2)
         navbox.addWidget(self.groupbox3)
         vbox.addLayout(contbox)
         contbox.addLayout(leftcon)
@@ -108,6 +126,148 @@ class mainwin(QWidget):
         self.setLayout(vbox)
 
 
+    def shizuku(self):
+        try:
+            name = "moe.shizuku.privileged.api"
+            findev = ADBCommand('adb shell "pm list packages | grep moe.shizuku.privileged.api"')
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+            if name in findev_output:
+                print("shizuku已安装")
+                self.textdisplay.setText("激活管理程序已安装")
+                reply = QMessageBox.question(self, '应用程序已安装', 'shizuku已安装,是否激活?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    self.textdisplay.setText("激活中...")
+                    cmd = f'adb shell am start -n {name}/moe.shizuku.manager.MainActivity'
+                    subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+                    active_icebox = f'adb shell sh /storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh'
+                    subprocess.check_output(active_icebox, shell=True, stderr=subprocess.STDOUT)
+                    self.textdisplay.setText("shizuku已激活,现在可以对程序统一进行激活了")
+                else:
+                    self.textdisplay.setText("激活失败，请确认无误后再试")
+
+            else:
+                raise Exception()
+        except:
+            print("Shizuku未安装")
+
+            self.textdisplay.setText("检测到Shizuku未安装")
+            reply = QMessageBox.question(self, '应用程序未安装', 'Shizuku未安装,是否要安装?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                self.textdisplay.setText("安装中...")
+                apk_path = '.\\PyQtBox\\apk\\shizuku.apk'
+                apk_path = os.path.abspath(apk_path)
+                cmd = f'adb install "{apk_path}"'
+                try:
+                    subprocess.check_output(cmd, shell=True,stderr=subprocess.STDOUT)
+                    print('安装成功')
+                    self.textdisplay.setText("shizuku安装成功")
+                except subprocess.CalledProcessError as e:
+                    print(e.output.decode('utf-8'))
+                    print('shizuku安装失败')
+            else:
+                print('取消安装')
+
+
+    def ops(self):
+        try:
+            name = "rikka.appops"
+            findev = ADBCommand('adb shell "pm list packages | grep rikka.appops"')
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+            if name in findev_output:
+                print("ops已安装")
+                self.textdisplay.setText("权限管理程序已安装,请确认shizuku也已经安装")
+                reply = QMessageBox.question(self, '应用程序已安装', 'ops已安装,是否激活?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    self.textdisplay.setText("激活中...")
+                    cmd = f'adb shell am start -n {name}/rikka.appops.home.HomeActivity'
+                    subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+                    # active_icebox = f'adb shell sh /storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh'
+                    # subprocess.check_output(active_icebox, shell=True, stderr=subprocess.STDOUT)
+                    self.textdisplay.setText("点击以[shizuku模式]激活程序")
+                    self.textdisplay.setText("已激活,现在可以对程序统一进行激活了")
+                else:
+                    self.textdisplay.setText("激活失败，请确认无误后再试")
+
+            else:
+                raise Exception()
+        except:
+            print("ops未安装")
+
+            self.textdisplay.setText("检测到权限管理程序未安装")
+            reply = QMessageBox.question(self, '应用程序未安装', '权限管理程序未安装,是否要安装?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                self.textdisplay.setText("安装中...")
+                apk_path = '.\\PyQtBox\\apk\\shizuku.apk'
+                apk_path = os.path.abspath(apk_path)
+                cmd = f'adb install "{apk_path}"'
+                try:
+                    subprocess.check_output(cmd, shell=True,stderr=subprocess.STDOUT)
+                    print('安装成功')
+                    self.textdisplay.setText("权限管理程序安装成功")
+                except subprocess.CalledProcessError as e:
+                    print(e.output.decode('utf-8'))
+                    print('权限管理程序安装失败')
+            else:
+                print('取消安装')
+
+
+
+    def icebox(self):
+        # name = "com.merxury.blocker"
+        
+        try:
+            name = "com.catchingnow.icebox"
+            findev = ADBCommand('adb shell "pm list packages | grep com.catchingnow.icebox"')
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+            if name in findev_output:
+                print("冰箱已安装")
+                self.textdisplay.setText("冰箱已安装")
+                reply = QMessageBox.question(self, '应用程序已安装', '冰箱已安装，是否激活?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    self.textdisplay.setText("激活中...")
+                    cmd = f'adb shell am start -n {name}/com.catchingnow.icebox.activity.mainActivity.MainAppActivity'
+                    subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+                    active_icebox = f'adb shell sh /sdcard/Android/data/com.catchingnow.icebox/files/start.sh'
+                    subprocess.check_output(active_icebox, shell=True, stderr=subprocess.STDOUT)
+                    self.textdisplay.setText("冰箱已激活，请点击[普通adb]完成操作")
+                else:
+                    self.textdisplay.setText("激活失败，请确认无误后再试")
+
+            else:
+                raise Exception()
+        except:
+            print("冰箱未安装")
+            # self.textdisplay.setText("检测到冰箱未安装，正在安装中...")
+            self.textdisplay.setText("检测到冰箱未安装")
+            # findev = ADBCommand("adb install '.\apk\icebox.apk'")
+            # findev_output = findev.execute()
+            reply = QMessageBox.question(self, '应用程序未安装', '冰箱未安装，是否要安装?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                self.textdisplay.setText("安装中...")
+                apk_path = '.\\PyQtBox\\apk\\icebox.apk'
+                apk_path = os.path.abspath(apk_path)
+                cmd = f'adb install "{apk_path}"'
+                try:
+                    subprocess.check_output(cmd, shell=True,stderr=subprocess.STDOUT)
+                    print('安装成功')
+                    self.textdisplay.setText("冰箱安装成功")
+                except subprocess.CalledProcessError as e:
+                    print(e.output.decode('utf-8'))
+                    print('冰箱安装失败')
+            else:
+                print('取消安装')
+            # self.textdisplay.setText(findev_output)
+                # print("冰箱未安装,开始安装...")
+                # self.textdisplay.setText("wei")
     def cmd1(self):
         findev = ADBCommand("adb devices")
         findev_output = findev.execute()
