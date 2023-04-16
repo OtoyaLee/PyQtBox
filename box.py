@@ -65,7 +65,7 @@ class mainwin(QWidget):
         rightnav2 = QHBoxLayout()
         fun5 = QPushButton("冰箱安装/激活")
         fun5.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        fun6 = QPushButton("")
+        fun6 = QPushButton("无障碍管理安装/激活")
         fun6.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         rightnav2.addWidget(fun5)
         rightnav2.addWidget(fun6)
@@ -103,6 +103,7 @@ class mainwin(QWidget):
         fun3.clicked.connect(self.shizuku)
         fun4.clicked.connect(self.ops)
         fun5.clicked.connect(self.icebox)
+        fun6.clicked.connect(self.allin)
 
 
 
@@ -268,6 +269,56 @@ class mainwin(QWidget):
             # self.textdisplay.setText(findev_output)
                 # print("冰箱未安装,开始安装...")
                 # self.textdisplay.setText("wei")
+
+
+    def allin(self):
+        try:
+            name = "com.accessibilitymanager"
+            findev = ADBCommand('adb shell "pm list packages | grep com.accessibilitymanager"')
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+            if name in findev_output:
+                print("无障碍管理已安装")
+                self.textdisplay.setText("无障碍功能管理及保活程序已安装,请确认shizuku也已经安装")
+                reply = QMessageBox.question(self, '应用程序已安装', '无障碍管理已安装,是否激活?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    self.textdisplay.setText("激活中...")
+                    cmd = f'adb shell am start -n {name}/com.accessibilitymanager.MainActivity'
+                    subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+                    # active_icebox = f'adb shell sh /storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh'
+                    # subprocess.check_output(active_icebox, shell=True, stderr=subprocess.STDOUT)
+                    self.textdisplay.setText("点击需要保活的无障碍应用后的开关,以shizuku模式激活")
+                    self.textdisplay.setText("点击以[shizuku模式]激活程序")
+                    self.textdisplay.setText("已激活,现在可以对无障碍程序统一进行操作了")
+                else:
+                    self.textdisplay.setText("激活失败，请确认无误后再试")
+
+            else:
+                raise Exception()
+        except:
+            print("无障碍管理未安装")
+
+            self.textdisplay.setText("检测到权限管理程序未安装")
+            reply = QMessageBox.question(self, '应用程序未安装', '无障碍应用管理程序未安装,是否要安装?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                self.textdisplay.setText("安装中...")
+                apk_path = '.\\PyQtBox\\apk\\wuzhangai.apk'
+                apk_path = os.path.abspath(apk_path)
+                cmd = f'adb install "{apk_path}"'
+                try:
+                    subprocess.check_output(cmd, shell=True,stderr=subprocess.STDOUT)
+                    print('安装成功')
+                    self.textdisplay.setText("无障碍管理程序安装成功")
+                except subprocess.CalledProcessError as e:
+                    print(e.output.decode('utf-8'))
+                    print('无障碍管理程序安装失败')
+            else:
+                print('取消安装')
+
+
+    
     def cmd1(self):
         findev = ADBCommand("adb devices")
         findev_output = findev.execute()
