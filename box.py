@@ -10,6 +10,7 @@ from comset import ADBCommand
 class mainwin(QWidget):
     def __init__(self):
         super().__init__()
+        self.count = 0
         self.archui()
     def archui(self):
         self.setGeometry(300, 200, 1280, 720)
@@ -77,9 +78,9 @@ class mainwin(QWidget):
 #横向布局内部的第一个网格布局
         leftcon = QGridLayout()
         names = ["主页","返回","音量+","音量-",
-                 "背光+","背光-","菜单","电源键",
-                 "点亮屏幕","滑动屏幕(横向)","滑动屏幕(纵向)","显示/隐藏状态导航栏",
-                 "截图","开/关机","重启","备份"
+                 "背光+","背光-","菜单","通知栏",
+                 "点亮屏幕","滑动屏幕(左滑)","滑动屏幕(右滑)","滑动屏幕(上滑)",
+                 "滑动屏幕(下滑)","关机","重启","截图"
                  ]
         for i in range(4):
             for j in range(4):
@@ -350,135 +351,92 @@ class mainwin(QWidget):
 
     def cmdall(self):
         btn = self.sender()
-
         if btn.text() == "主页":
             findev = ADBCommand("adb devices")
             findev_output = findev.execute()
             self.textdisplay.setText(findev_output)
         elif btn.text() == "返回":
-            findev = ADBCommand("adb devices")
+            self.count += 1
+            findev = ADBCommand("adb shell input keyevent 4")
             findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
+            # self.textdisplay.setText(findev_output)
+            self.textdisplay.setText(f"返回{self.count}次")
         elif btn.text() == "音量+":
-            findev = ADBCommand("adb devices")
+            self.count = 0
+            findev = ADBCommand("adb shell input keyevent 24")
             findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
+            # self.textdisplay.setText(findev_output)
+            self.textdisplay.setText(f"音量+1")
         elif btn.text() == "音量-":
-            findev = ADBCommand("adb devices")
+            findev = ADBCommand("adb shell input keyevent 25")
             findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
+            # self.textdisplay.setText(findev_output)
+            self.textdisplay.setText(f"音量-1")
         elif btn.text() == "背光+":
-            findev = ADBCommand("adb devices")
+            findev = ADBCommand("adb shell input leyevent 224 && adb shell input keyevent 221")
             findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
+            # self.textdisplay.setText(findev_output)
+            self.textdisplay.setText(f"背光+10")
         elif btn.text() == "背光-":
-            findev = ADBCommand("adb devices")
+            findev = ADBCommand("adb shell input keyevent KEYCODE_BRIGHTNESS_DOWN")
             findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
+            # self.textdisplay.setText(findev_output)
+            self.textdisplay.setText(f"背光-10")
         elif btn.text() == "菜单":
+            findev = ADBCommand("adb shell input keyevent KEYCODE_MENU")
+            findev_output = findev.execute()
+            # self.textdisplay.setText(findev_output)
+            self.textdisplay.setText(f"菜单显示")
+        elif btn.text() == "通知栏":
+            findev = ADBCommand("adb shell input keyevent KEYCODE_NOTIFICATION")
+            findev_output = findev.execute()
+            # self.textdisplay.setText(findev_output)
+            self.textdisplay.setText(f"开启/关闭通知栏")
+        elif btn.text() == "点亮/关闭屏幕":
+            findev = ADBCommand("adb shell input keyevent KEYCODE_POWER")
+            findev_output = findev.execute()
+            self.textdisplay.setText(f"按下电源键")
+        elif btn.text() == "滑动屏幕(左滑)":
+            findev = ADBCommand("adb shell input swpie 960 540 50 540 500")
+            findev_output = findev.execute()
+            self.textdisplay.setText(f"左滑屏幕")
+        elif btn.text() == "滑动屏幕(右滑)":
+            findev = ADBCommand("adb shell input swipe 100 540 960 540 500")
+            findev_output = findev.execute()
+            self.textdisplay.setText(f"右滑屏幕")
+        elif btn.text() == "滑动屏幕(上滑)":
             findev = ADBCommand("adb devices")
             findev_output = findev.execute()
             self.textdisplay.setText(findev_output)
-        elif btn.text() == "电源键":
+        elif btn.text() == "滑动屏幕(下滑)":
             findev = ADBCommand("adb devices")
             findev_output = findev.execute()
             self.textdisplay.setText(findev_output)
-        elif btn.text() == "点亮屏幕":
-            findev = ADBCommand("adb devices")
+        elif btn.text() == "关机":
+            findev = ADBCommand("adb shell reboot -p")
             findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
-        elif btn.text() == "滑动屏幕(横向)":
-            findev = ADBCommand("adb devices")
-            findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
-        elif btn.text() == "滑动屏幕(纵向)":
-            findev = ADBCommand("adb devices")
-            findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
-        elif btn.text() == "显示/隐藏状态导航栏":
-            findev = ADBCommand("adb devices")
-            findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
-        elif btn.text() == "截图":
-            findev = ADBCommand("adb devices")
-            findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
-        elif btn.text() == "开/关机":
-            findev = ADBCommand("adb devices")
-            findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
+            self.textdisplay.setText(f"关机")
         elif btn.text() == "重启":
-            findev = ADBCommand("adb devices")
+            findev = ADBCommand("adb reboot")
             findev_output = findev.execute()
-            self.textdisplay.setText(findev_output)
-
-
-    
-    # def cmd1(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd2(self):
-    #     findev = ADBCommand("adb shell  settings list system")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd3(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd4(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd5(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd6(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd7(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd8(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd11(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd12(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd13(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd14(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd15(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd16(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd17(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-    # def cmd18(self):
-    #     findev = ADBCommand("adb devices")
-    #     findev_output = findev.execute()
-    #     self.textdisplay.setText(findev_output)
-
+            self.textdisplay.setText(f"重启")
+        elif btn.text() == "截图":
+            # findev = ADBCommand("adb shell screencap \\sdcard\\screenshot.png && adb pull \\sdcard\\screenshot.png .\\PyQtBox\\Screen")
+            # findev_output = findev.execute()
+            # self.textdisplay.setText(f"截图")
+            img_path = '/data/local/tmp/screenshot.png'
+            # img_path= os.path.abspath(img_path)
+            to_path = '.\\PyQtBox\\img\\screen.png'
+            to_path = os.path.abspath(to_path)
+            cmd = f'adb shell screencap "{img_path}" && adb pull "{img_path}" "{to_path}" '
+            try:
+                subprocess.check_output(cmd, shell=True,stderr=subprocess.STDOUT)
+                print('截图成功')
+                self.textdisplay.setText("截图成功,并已传送至img文件夹")
+            except subprocess.CalledProcessError as e:
+                print(e.output.decode('utf-8'))
+                print('截图失败')
+        
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
