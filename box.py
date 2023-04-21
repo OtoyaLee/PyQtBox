@@ -19,7 +19,7 @@ class mainwin(QWidget):
         self.groupbox1 = QGroupBox("功能切换",self)
         self.groupbox2 = QGroupBox("环境配置",self)
         self.groupbox3 = QGroupBox("软件安装/激活",self)
-        self.groupbox4 = QGroupBox("辅助功能",self)
+        self.groupbox4 = QGroupBox("屏幕损坏辅助功能",self)
         self.groupbox5 = QGroupBox("屏显",self)
 
 #总体布局，竖向
@@ -28,8 +28,8 @@ class mainwin(QWidget):
 #第一个横向布局
         butbox = QHBoxLayout()
         bt1 = QPushButton("设备控制")
-        bt2 = QPushButton("还没想好")
-        bt3 = QPushButton("高级模式")
+        bt2 = QPushButton("高级模式")
+        bt3 = QPushButton("还没想好")
         bt4 = QPushButton("作者信息")
         butbox.addWidget(bt1)
         butbox.addWidget(bt2)
@@ -76,19 +76,28 @@ class mainwin(QWidget):
         contbox = QHBoxLayout()
 #横向布局内部的第一个网格布局
         leftcon = QGridLayout()
-        names = ["g1","g2","g3","g4",
-                 "g5","g6","g7","g8",
-                 "g9","g21","g32","g43",
-                 "g12","g23","g34","g45"
+        names = ["主页","返回","音量+","音量-",
+                 "背光+","背光-","菜单","电源键",
+                 "点亮屏幕","滑动屏幕(横向)","滑动屏幕(纵向)","显示/隐藏状态导航栏",
+                 "截图","开/关机","重启","备份"
                  ]
-        positions = [(i,j) for i in range(4) for j in range(4)]
-        for position,name in zip(positions,names):
-            if name == '':
-                continue
-            button = QPushButton(name)
-            button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-            button.setMaximumWidth(250)
-            leftcon.addWidget(button,*position)
+        for i in range(4):
+            for j in range(4):
+                index = i * 4 + j # 计算当前按钮在列表中的索引
+                name = names[index]
+                button = QPushButton(text=name) # 设置按钮的text属性
+                button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+                button.setMaximumWidth(250)
+                button.clicked.connect(self.cmdall) # 添加clicked信号的槽函数
+                leftcon.addWidget(button, i, j)
+        # positions = [(i,j) for i in range(4) for j in range(4)]
+        # for position,name in zip(positions,names):
+        #     if name == '':
+        #         continue
+            # button = QPushButton(name)
+            # button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+            # button.setMaximumWidth(250)
+            # leftcon.addWidget(button,*position)
 
         self.groupbox4.setLayout(leftcon)
 
@@ -98,12 +107,32 @@ class mainwin(QWidget):
         rightcon.addWidget(self.textdisplay)
         self.groupbox5.setLayout(rightcon)
 #功能绑定
-        fun1.clicked.connect(self.cmd1)
-        fun2.clicked.connect(self.cmd2)
+        # fun1.clicked.connect(self.cmd1)
+        # fun2.clicked.connect(self.cmd2)
         fun3.clicked.connect(self.shizuku)
         fun4.clicked.connect(self.ops)
         fun5.clicked.connect(self.icebox)
         fun6.clicked.connect(self.allin)
+
+
+
+
+        # button.clicked.connect(self.cmd1)
+        # fun7.clicked.connect(self.cmd2)
+        # fun7.clicked.connect(self.cmd3)
+        # fun7.clicked.connect(self.cmd4)
+        # fun7.clicked.connect(self.cmd5)
+        # fun7.clicked.connect(self.cmd6)
+        # fun7.clicked.connect(self.cmd7)
+        # fun7.clicked.connect(self.cmd8)
+        # fun7.clicked.connect(self.cmd11)
+        # fun7.clicked.connect(self.cmd12)
+        # fun7.clicked.connect(self.cmd13)
+        # fun7.clicked.connect(self.cmd14)
+        # fun7.clicked.connect(self.cmd15)
+        # fun7.clicked.connect(self.cmd16)
+        # fun7.clicked.connect(self.cmd17)
+        # fun7.clicked.connect(self.cmd18)
 
 
 
@@ -125,6 +154,7 @@ class mainwin(QWidget):
         contbox.addWidget(self.groupbox5)
         # vbox.addItem(vboxspac)
         self.setLayout(vbox)
+    
 
 
     def shizuku(self):
@@ -318,71 +348,136 @@ class mainwin(QWidget):
                 print('取消安装')
 
 
+    def cmdall(self):
+        btn = self.sender()
+
+        if btn.text() == "主页":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "返回":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "音量+":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "音量-":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "背光+":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "背光-":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "菜单":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "电源键":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "点亮屏幕":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "滑动屏幕(横向)":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "滑动屏幕(纵向)":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "显示/隐藏状态导航栏":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "截图":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "开/关机":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+        elif btn.text() == "重启":
+            findev = ADBCommand("adb devices")
+            findev_output = findev.execute()
+            self.textdisplay.setText(findev_output)
+
+
     
-    def cmd1(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd2(self):
-        findev = ADBCommand("adb shell  settings list system")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd3(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd4(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd5(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd6(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd7(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd8(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd11(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd12(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd13(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd14(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd15(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd16(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd17(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
-    def cmd18(self):
-        findev = ADBCommand("adb devices")
-        findev_output = findev.execute()
-        self.textdisplay.setText(findev_output)
+    # def cmd1(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd2(self):
+    #     findev = ADBCommand("adb shell  settings list system")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd3(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd4(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd5(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd6(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd7(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd8(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd11(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd12(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd13(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd14(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd15(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd16(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd17(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
+    # def cmd18(self):
+    #     findev = ADBCommand("adb devices")
+    #     findev_output = findev.execute()
+    #     self.textdisplay.setText(findev_output)
 
 
 if __name__ == '__main__':
