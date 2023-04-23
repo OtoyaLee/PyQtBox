@@ -7,6 +7,107 @@ from PyQt5.QtWidgets import *
 from comset import ADBCommand
 
 
+
+class MyDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # 设置对话框标题和大小
+        self.setWindowTitle("高级模式")
+        self.setGeometry(300, 200, 1280, 720)
+        self.fastbootbox = QGroupBox("Fastboot刷入")
+        self.recoverybox = QGroupBox("Recovery刷入")
+        # self.fastbootbox = QGroupBox("Fastboot刷入")
+
+        vtbox = QVBoxLayout()
+        #FASTBOOT刷入区域
+        htbox = QHBoxLayout()
+        # label = QLabel("path:")
+        htvbox = QVBoxLayout()
+        self.select_button = QPushButton("选择")
+        # self.select_button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.path_label = QLabel()
+        # self.path_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.device_button = QPushButton("刷新设备")
+        # self.device_button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.flash_button = QPushButton("刷入")
+        # self.flash_button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+
+        vtabox = QVBoxLayout()
+        self.p1 = QLabel("1:点击【一键进入fastboot】,或者按住【音量-】和【电源键】5s进入fastboot模式")
+        self.p2 = QLabel("2:点击【设备】按钮刷新设备")
+        self.p3 = QLabel("3:点击【选择】按钮,选择已经解压后的线刷包")
+        self.p4 = QLabel("4:点击【刷入】按钮")
+        self.p5 = QLabel("5:等待大约5~20分钟,刷入后自动重启")
+
+        vtabox.addWidget(self.p1)
+        vtabox.addWidget(self.p2)
+        vtabox.addWidget(self.p3)
+        vtabox.addWidget(self.p4)
+        vtabox.addWidget(self.p5)
+
+
+
+
+        self.select_button.clicked.connect(self.select_file)
+        self.device_button.clicked.connect(self.device_display)
+        self.flash_button.clicked.connect(self.flash_device)
+
+
+        htvbox.addWidget(self.select_button)
+        # htbox.addWidget(label)
+        htvbox.addWidget(self.path_label)
+        htvbox.addWidget(self.device_button)
+        htvbox.addWidget(self.flash_button)
+        htbox.addLayout(htvbox)
+        htbox.addLayout(vtabox)
+        self.fastbootbox.setLayout(htbox)
+
+        vtbox2 = QVBoxLayout()
+        self.text1 = QLabel("1:点击【一键进入rec】,或者按住【音量+】和【电源键】5s进入rec模式")
+        self.text1.setWordWrap(True)
+        self.text2 = QLabel("2:进入rec后,点击【清除】按钮进入擦除与格式页面,如需【双清】,滑动[恢复出厂设置]按钮,或者在【高级清除选项】中勾选[data]和[cache]分区后,【滑动按钮确认清除】")
+        self.text3 = QLabel("3:在【高级清除选项】中,如需[三清],则勾选[data]、[cache]、[dalvik cache]后,【滑动按钮确认清除】")
+        self.text4 = QLabel("4:在【高级清除选项】中,如需[四清],则勾选[data]、[cache]、[dalvik cache],外加一个[system]分区后,【滑动按钮确认清除】")
+        self.text5 = QLabel("5:如果在rec中遇到乱码、无法解密data等情况,需要在【清除】页面点击【格式化data分区】按钮后,根据提示输入[yes]再点击回车后完成操作")
+        self.recbt = QPushButton("一键进入rec")
+
+        self.recbt.clicked.connect(self.recflash)
+        
+        vtbox2.addWidget(self.text1)
+        vtbox2.addWidget(self.text2)
+        vtbox2.addWidget(self.text3)
+        vtbox2.addWidget(self.text4)
+        vtbox2.addWidget(self.text5)
+        vtbox2.addWidget(self.recbt)
+
+        self.recoverybox.setLayout(vtbox2)
+
+
+
+        vtbox.addLayout(htbox)
+        vtbox.addWidget(self.fastbootbox)
+        vtbox.addLayout(vtbox2)
+        vtbox.addWidget(self.recoverybox)
+        self.setLayout(vtbox)
+
+
+    def select_file(self):
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getOpenFileName(self, "选择需要刷入的文件", "", "All Files (*);;Text Files (*.txt)", options=options)
+        if file_path:
+            self.path_label.setText(file_path)
+
+    def device_display(self):
+        print("你好！")
+
+    def flash_device(self):
+        print("大家好！")
+
+    def recflash(self):
+        print("youxi")
+
+
 class mainwin(QWidget):
     def __init__(self):
         super().__init__()
@@ -38,6 +139,7 @@ class mainwin(QWidget):
         butbox.addWidget(bt4)
         vboxspac = QSpacerItem(20,20,QSizePolicy.Minimum,QSizePolicy.Expanding)
         self.groupbox1.setLayout(butbox)
+        bt2.clicked.connect(self.show_dialog)
         #多功能
 #第二个横向布局
         navbox = QHBoxLayout()
@@ -436,6 +538,11 @@ class mainwin(QWidget):
             except subprocess.CalledProcessError as e:
                 print(e.output.decode('utf-8'))
                 print('截图失败')
+
+    def show_dialog(self):
+        # 创建并显示新对话框
+        dialog = MyDialog()
+        dialog.exec_()
         
 
 if __name__ == '__main__':
