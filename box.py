@@ -1,6 +1,8 @@
 import sys
 import os
 import subprocess
+import re
+import time
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
@@ -40,7 +42,7 @@ class MyDialog(QDialog):
         self.p2 = QLabel("2:点击【一键进入fastboot】,或者按住【音量-】和【电源键】5s进入fastboot模式")
         self.p3 = QLabel("3:点击【选择】按钮,选择已经解压后的线刷包")
         self.p4 = QLabel("4:点击【刷入】按钮")
-        self.p5 = QLabel("5:等待大约5~20分钟,刷入后自动重启")
+        self.p5 = QLabel("5:等待大约5~20分钟,刷入后自动重启,若无自动重启,请长按【电源键】强制重启")
 
         stathbox = QHBoxLayout()
         self.fastbootone = QPushButton("一键进入fastboot")
@@ -158,11 +160,11 @@ class mainwin(QWidget):
         bt1 = QPushButton("设备控制")
         bt2 = QPushButton("高级模式")
         # bt3 = QPushButton("还没想好")
-        bt4 = QPushButton("作者信息")
+        # bt4 = QPushButton("作者信息")
         butbox.addWidget(bt1)
         butbox.addWidget(bt2)
         # butbox.addWidget(bt3)
-        butbox.addWidget(bt4)
+        # butbox.addWidget(bt4)
         vboxspac = QSpacerItem(20,20,QSizePolicy.Minimum,QSizePolicy.Expanding)
         self.groupbox1.setLayout(butbox)
         bt2.clicked.connect(self.show_dialog)
@@ -172,9 +174,9 @@ class mainwin(QWidget):
 #横向布局内部的第一个横向布局
 #内部为纵向布局
         leftnav = QVBoxLayout()
-        fun1 = QPushButton("一键环境部署") 
+        fun1 = QPushButton("一键投屏") 
         fun1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        fun2 = QPushButton("取消所有部署")
+        fun2 = QPushButton("无线调试")
         fun2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         leftnav.addWidget(fun1)
         leftnav.addWidget(fun2)
@@ -236,8 +238,8 @@ class mainwin(QWidget):
         rightcon.addWidget(self.textdisplay)
         self.groupbox5.setLayout(rightcon)
 #功能绑定
-        # fun1.clicked.connect(self.cmd1)
-        # fun2.clicked.connect(self.cmd2)
+        fun1.clicked.connect(self.scrcpyopen)
+        fun2.clicked.connect(self.lineless)
         fun3.clicked.connect(self.shizuku)
         fun4.clicked.connect(self.ops)
         fun5.clicked.connect(self.icebox)
@@ -283,7 +285,36 @@ class mainwin(QWidget):
         contbox.addWidget(self.groupbox5)
         # vbox.addItem(vboxspac)
         self.setLayout(vbox)
-    
+
+
+    def scrcpyopen(self):
+        subprocess.Popen(["scrcpy","--b"])
+
+    def lineless(self):
+        # findev = ADBCommand('adb shell ifconfig wlan0')
+        # findev_output = findev.execute()
+        output = subprocess.check_output(["adb", "shell", "ifconfig", "wlan0"])
+        ip_address_match = re.search(r"inet addr:([\d\.]+)", output.decode("utf-8"))
+
+        if ip_address_match:
+            ip_address = ip_address_match.group(1)
+            print(ip_address)
+        else:
+            print("没找到")
+        # self.textdisplay.setText("获取ip中...")
+        # time.sleep(5)
+        # self.textdisplay.setText(findev_output)
+        time.sleep(2)
+        self.textdisplay.setText(ip_address)
+        # self.textdisplay.setText("ip")
+        findev = ADBCommand('adb tcpip 5555')
+        findev_output = findev.execute()
+        self.textdisplay.setText(findev_output)
+        self.textdisplay.setText("成功通信,拔下数据线")
+        findev = ADBCommand(f'adb connect {ip_address}:5555')
+        findev_output = findev.execute()
+        self.textdisplay.setText(findev_output)
+        self.textdisplay.setText("现在可以拔下数据线了")
 
 
     def shizuku(self):
