@@ -36,18 +36,28 @@ class MyDialog(QDialog):
         self.status_bar = QStatusBar(self)
 
         vtabox = QVBoxLayout()
-        self.p1 = QLabel("1:点击【一键进入fastboot】,或者按住【音量-】和【电源键】5s进入fastboot模式")
-        self.p2 = QLabel("2:点击【刷新设备】按钮刷新现有设备")
+        self.p1 = QLabel("1:点击【刷新设备】按钮刷新现有设备")
+        self.p2 = QLabel("2:点击【一键进入fastboot】,或者按住【音量-】和【电源键】5s进入fastboot模式")
         self.p3 = QLabel("3:点击【选择】按钮,选择已经解压后的线刷包")
         self.p4 = QLabel("4:点击【刷入】按钮")
         self.p5 = QLabel("5:等待大约5~20分钟,刷入后自动重启")
+
+        stathbox = QHBoxLayout()
+        self.fastbootone = QPushButton("一键进入fastboot")
+
+        self.fastbootone.clicked.connect(self.onefastboot)
+
+        stathbox.addWidget(self.fastbootone)
+        stathbox.addWidget(self.status_bar)
 
         vtabox.addWidget(self.p1)
         vtabox.addWidget(self.p2)
         vtabox.addWidget(self.p3)
         vtabox.addWidget(self.p4)
         vtabox.addWidget(self.p5)
-        vtabox.addWidget(self.status_bar)
+        vtabox.addLayout(stathbox)
+        # vtabox.addWidget(self.status_bar)
+
 
 
 
@@ -116,8 +126,12 @@ class MyDialog(QDialog):
             return
         subprocess.Popen([self.file_bat])
 
+    def onefastboot(self):
+        # print("jj")
+        os.system('adb reboot bootloader')
+
     def recflash(self):
-        print("youxi")
+        os.system('adb reboot recovery')
 
 
 class mainwin(QWidget):
