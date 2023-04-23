@@ -26,16 +26,18 @@ class MyDialog(QDialog):
         htvbox = QVBoxLayout()
         self.select_button = QPushButton("选择")
         # self.select_button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        self.path_label = QLabel()
-        # self.path_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        # self.path_label = QLabel()
+        self.pathtext = QLineEdit(self)
+        # self.pathtext.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.device_button = QPushButton("刷新设备")
         # self.device_button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.flash_button = QPushButton("刷入")
         # self.flash_button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.status_bar = QStatusBar(self)
 
         vtabox = QVBoxLayout()
         self.p1 = QLabel("1:点击【一键进入fastboot】,或者按住【音量-】和【电源键】5s进入fastboot模式")
-        self.p2 = QLabel("2:点击【设备】按钮刷新设备")
+        self.p2 = QLabel("2:点击【刷新设备】按钮刷新现有设备")
         self.p3 = QLabel("3:点击【选择】按钮,选择已经解压后的线刷包")
         self.p4 = QLabel("4:点击【刷入】按钮")
         self.p5 = QLabel("5:等待大约5~20分钟,刷入后自动重启")
@@ -45,6 +47,7 @@ class MyDialog(QDialog):
         vtabox.addWidget(self.p3)
         vtabox.addWidget(self.p4)
         vtabox.addWidget(self.p5)
+        vtabox.addWidget(self.status_bar)
 
 
 
@@ -56,7 +59,8 @@ class MyDialog(QDialog):
 
         htvbox.addWidget(self.select_button)
         # htbox.addWidget(label)
-        htvbox.addWidget(self.path_label)
+        # htvbox.addWidget(self.path_label)
+        htvbox.addWidget(self.pathtext)
         htvbox.addWidget(self.device_button)
         htvbox.addWidget(self.flash_button)
         htbox.addLayout(htvbox)
@@ -93,16 +97,24 @@ class MyDialog(QDialog):
 
 
     def select_file(self):
-        options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getOpenFileName(self, "选择需要刷入的文件", "", "All Files (*);;Text Files (*.txt)", options=options)
-        if file_path:
-            self.path_label.setText(file_path)
+        # options = QFileDialog.Options()
+        file_bat, _ = QFileDialog.getOpenFileName(self, "选择需要刷入的文件", ".", "Batch Files (*.bat)")
+        if file_bat:
+            # self.path_label.setText(file_path)
+            self.pathtext.setText(file_bat)
+            # self.file_path = file_path
+        self.file_bat = file_bat
 
     def device_display(self):
-        print("你好！")
+        result = subprocess.check_output(['adb', 'devices', '-l']).decode()
+        device_name = result.split('\n')[1].split()[3]
+        self.status_bar.showMessage(f'(设备){device_name}')
 
     def flash_device(self):
-        print("大家好！")
+        # print("大家好！")
+        if not hasattr(self,'file_bat'):
+            return
+        subprocess.Popen([self.file_bat])
 
     def recflash(self):
         print("youxi")
@@ -131,11 +143,11 @@ class mainwin(QWidget):
         butbox = QHBoxLayout()
         bt1 = QPushButton("设备控制")
         bt2 = QPushButton("高级模式")
-        bt3 = QPushButton("还没想好")
+        # bt3 = QPushButton("还没想好")
         bt4 = QPushButton("作者信息")
         butbox.addWidget(bt1)
         butbox.addWidget(bt2)
-        butbox.addWidget(bt3)
+        # butbox.addWidget(bt3)
         butbox.addWidget(bt4)
         vboxspac = QSpacerItem(20,20,QSizePolicy.Minimum,QSizePolicy.Expanding)
         self.groupbox1.setLayout(butbox)
