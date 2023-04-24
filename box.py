@@ -17,6 +17,7 @@ class MyDialog(QDialog):
         # 设置对话框标题和大小
         self.setWindowTitle("高级模式")
         self.setGeometry(300, 200, 1280, 720)
+        self.setWindowIcon(QIcon('PyQtBox\logo.png'))
         self.fastbootbox = QGroupBox("Fastboot刷入")
         self.recoverybox = QGroupBox("Recovery刷入")
         # self.fastbootbox = QGroupBox("Fastboot刷入")
